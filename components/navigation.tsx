@@ -26,7 +26,7 @@ export function Navigation() {
           <div className="hidden items-center gap-6 md:flex">
             <span className="flex items-center gap-2">
               <Phone className="size-4" />
-              <span>(555) 123-4567</span>
+              <span>+91 9973622731</span>
             </span>
             <span className="flex items-center gap-2">
               <Clock className="size-4" />
@@ -35,7 +35,7 @@ export function Navigation() {
           </div>
           <span className="flex items-center gap-2">
             <MapPin className="size-4" />
-            <span>123 Medical Center Dr, Health City</span>
+            <span>https://share.google/QbmyAdX2jwC62vTYb</span>
           </span>
         </div>
       </div>
