@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Phone, Mail, Clock } from "lucide-react"
+import { Phone, Mail, Clock, MapPin } from "lucide-react"
 
 export function Footer() {
   return (
@@ -59,9 +59,9 @@ export function Footer() {
                 <span>contact@swastikhospital.com</span>
               </li>
               <li className="flex items-start gap-2 text-muted-foreground">
-                
+                <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
                 <Link href="https://share.google/9efbNqBa5EJhBM1g4" className="text-muted-foreground transition-colors hover:text-primary">
-                  📍 View on Google Maps
+                  View on Google Maps
                 </Link>
               </li>
             </ul>

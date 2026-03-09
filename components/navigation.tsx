@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Phone, Clock } from "lucide-react"
+import { Menu, X, Phone, Clock, MapPin } from "lucide-react"
 import { useState } from "react"
 
 const navLinks = [
@@ -39,8 +39,9 @@ export function Navigation() {
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
+            <MapPin className="size-4" />
             <span>
-              📍 View on Google Maps
+              View on Google Maps
             </span>
           </a>
         </div>
