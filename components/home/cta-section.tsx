@@ -23,7 +23,7 @@ export function CtaSection() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="gap-2 border-primary-foreground/20 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                <a href="tel:5551234567">
+                <a href="tel:+919973622731">
                   <Phone className="size-5" />
                   +91 9973622731
                 </a>
@@ -40,9 +40,14 @@ export function CtaSection() {
                   <MapPin className="mt-0.5 size-5 shrink-0 text-primary-foreground/80" />
                   <div>
                     <p className="font-medium text-primary-foreground">Location</p>
-                    <p className="text-sm text-primary-foreground/80">
-                      https://share.google/nKY1rZosZW4khSRoF
-                    </p>
+                    <a
+                      href="https://share.google/nKY1rZosZW4khSRoF"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary-foreground/80 underline-offset-4 hover:underline"
+                    >
+                     https://share.google/nKY1rZosZW4khSRoF
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">

@@ -33,10 +33,17 @@ export function Navigation() {
               <span>Mon-Fri: 9AM - 6PM</span>
             </span>
           </div>
-          <span className="flex items-center gap-2">
+          <a
+            href="https://share.google/nKY1rZosZW4khSRoF"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
             <MapPin className="size-4" />
-            <span>https://share.google/nKY1rZosZW4khSRoF</span>
-          </span>
+            <span className="truncate">
+              https://share.google/nKY1rZosZW4khSRoF
+            </span>
+          </a>
         </div>
       </div>
 
@@ -46,7 +53,9 @@ export function Navigation() {
           <div className="flex size-10 items-center justify-center rounded-full bg-primary">
             <span className="text-lg font-bold text-primary-foreground">SH</span>
           </div>
-          <span className="text-xl font-bold text-foreground">Swastik Hospital</span>
+          <span className="hidden sm:inline text-xl font-bold text-foreground">
+            Swastik Hospital
+          </span>
         </Link>
 
         {/* Desktop navigation */}
@@ -102,7 +111,10 @@ export function Navigation() {
               </Link>
             ))}
             <Button asChild className="mt-2">
-              <Link href="/appointments" onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                href="/appointments"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Book Appointment
               </Link>
             </Button>
