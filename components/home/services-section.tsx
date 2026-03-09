@@ -1,35 +1,39 @@
-
-import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Brain, Baby, Bone, Eye } from "lucide-react"
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heart, Brain, Baby, Bone, Eye, Stethoscope } from "lucide-react";
 
 const services = [
-  {
-    name: "Cardiology",
-    icon: Heart,
-    specialty: "cardiology",
-  },
-  {
-    name: "Neurology",
-    icon: Brain,
-    specialty: "neurology",
-  },
-  {
-    name: "Pediatrics",
-    icon: Baby,
-    specialty: "pediatrics",
-  },
-  {
-    name: "Orthopedics",
-    icon: Bone,
-    specialty: "orthopedics",
-  },
-  {
-    name: "Ophthalmology",
-    icon: Eye,
-    specialty: "ophthalmology",
-  },
-]
+    {
+        name: "General Checkup",
+        icon: Stethoscope,
+        specialty: "general-checkup",
+    },
+    {
+        name: "Cardiology",
+        icon: Heart,
+        specialty: "cardiology",
+    },
+    {
+        name: "Neurology",
+        icon: Brain,
+        specialty: "neurology",
+    },
+    {
+        name: "Pediatrics",
+        icon: Baby,
+        specialty: "pediatrics",
+    },
+    {
+        name: "Orthopedics",
+        icon: Bone,
+        specialty: "orthopedics",
+    },
+    {
+        name: "Ophthalmology",
+        icon: Eye,
+        specialty: "ophthalmology",
+    },
+];
 
 export function ServicesSection() {
   return (

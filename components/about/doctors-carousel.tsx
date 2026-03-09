@@ -15,6 +15,17 @@ import { useRef } from "react";
 
 const doctors = [
     {
+        id: 8,
+        name: "Dr Rahul Raj",
+        title: "Chief Medical Officer",
+        specialty: "general-checkup",
+        experience: "15+ years",
+        education: "AIIMS, New Delhi",
+        specializations: ["General Medicine", "Preventive Care", "Health Checkups"],
+        image: "/images/doctors/dr-rahul-raj.jpg",
+        bio: "Experienced medical professional leading the clinic and providing comprehensive healthcare services."
+    },
+    {
       id: 1,
       name: "Dr. Michael Chen",
       title: "Senior Cardiologist",
