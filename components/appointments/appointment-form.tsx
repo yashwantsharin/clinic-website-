@@ -124,7 +124,7 @@ export function AppointmentForm() {
                   id="phone"
                   name="phone"
                   type="tel"
-                  placeholder="(555) 123-4567"
+                  placeholder="+91 9973622731"
                   required
                 />
               </Field>

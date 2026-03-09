@@ -35,7 +35,7 @@ export function Navigation() {
           </div>
           <span className="flex items-center gap-2">
             <MapPin className="size-4" />
-            <span>https://share.google/QbmyAdX2jwC62vTYb</span>
+            <span>https://share.google/nKY1rZosZW4khSRoF</span>
           </span>
         </div>
       </div>

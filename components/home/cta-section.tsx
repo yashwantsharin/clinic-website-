@@ -39,9 +39,10 @@ export function CtaSection() {
                 <div className="flex items-start gap-4">
                   <MapPin className="mt-0.5 size-5 shrink-0 text-primary-foreground/80" />
                   <div>
-                    <p className="font-medium text-primary-foreground">https://share.google/QbmyAdX2jwC62vTYb</p>
+                    <p className="font-medium text-primary-foreground">Location</p>
                     <p className="text-sm text-primary-foreground/80">
-                    https://share.google/QbmyAdX2jwC62vTYb                    </p>
+                      https://share.google/nKY1rZosZW4khSRoF
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
