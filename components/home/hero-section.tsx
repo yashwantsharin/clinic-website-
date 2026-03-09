@@ -29,7 +29,7 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="gap-2">
-                <a href="tel:5551234567">
+                <a href="tel:+919973622731">
                   <Phone className="size-5" />
                   Call Us Now
                 </a>
