@@ -25,7 +25,7 @@ export function CtaSection() {
               <Button asChild size="lg" variant="outline" className="gap-2 border-primary-foreground/20 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
                 <a href="tel:5551234567">
                   <Phone className="size-5" />
-                  (555) 123-4567
+                  +91 9973622731
                 </a>
               </Button>
             </div>
@@ -39,10 +39,9 @@ export function CtaSection() {
                 <div className="flex items-start gap-4">
                   <MapPin className="mt-0.5 size-5 shrink-0 text-primary-foreground/80" />
                   <div>
-                    <p className="font-medium text-primary-foreground">Location</p>
+                    <p className="font-medium text-primary-foreground">https://share.google/QbmyAdX2jwC62vTYb</p>
                     <p className="text-sm text-primary-foreground/80">
-                      123 Medical Center Dr, Health City, HC 12345
-                    </p>
+                    https://share.google/QbmyAdX2jwC62vTYb                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -61,7 +60,7 @@ export function CtaSection() {
                   <Phone className="mt-0.5 size-5 shrink-0 text-primary-foreground/80" />
                   <div>
                     <p className="font-medium text-primary-foreground">Contact</p>
-                    <p className="text-sm text-primary-foreground/80">(555) 123-4567</p>
+                    <p className="text-sm text-primary-foreground/80">+91 9973622731</p>
                     <p className="text-sm text-primary-foreground/80">contact@healthcareclinic.com</p>
                   </div>
                 </div>
