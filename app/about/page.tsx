@@ -1,38 +1,40 @@
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { DoctorsCarousel } from "@/components/about/doctors-carousel"
-import { GraduationCap, Award, Heart, Users, Stethoscope, Clock } from "lucide-react"
-import Image from "next/image"
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { DoctorsCarousel } from "@/components/about/doctors-carousel";
+import { GraduationCap, Award, Heart, Users, Stethoscope, Clock } from "lucide-react";
+import Image from "next/image";
 
 export const metadata = {
   title: "Our Doctors | Swastik Hospital",
   description: "Meet our team of experienced and compassionate doctors dedicated to providing quality healthcare.",
-}
+};
 
 const clinicStats = [
-  {
-    icon: Users,
-    value: "50,000+",
-    label: "Patients Treated",
-  },
-  {
-    icon: Award,
-    value: "25+",
-    label: "Awards Won",
-  },
-  {
-    icon: Clock,
-    value: "20+",
-    label: "Years of Service",
-  },
-  {
-    icon: Stethoscope,
-    value: "15+",
-    label: "Specializations",
-  },
-]
+    {
+      icon: Users,
+      value: "50,000+",
+      label: "Patients Treated",
+    },
+    {
+      icon: Award,
+      value: "25+",
+      label: "Awards Won",
+    },
+    {
+      icon: Clock,
+      value: "20+",
+      label: "Years of Service",
+    },
+    {
+      icon: Stethoscope,
+      value: "15+",
+      label: "Specializations",
+    },
+  ]
 
-export default function AboutPage() {
+export default function AboutPage({ searchParams }: { searchParams: { specialty: string } }) {
+  const specialty = searchParams.specialty;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
@@ -77,12 +79,14 @@ export default function AboutPage() {
               <p className="mt-4 text-muted-foreground">
                 Dedicated professionals committed to your health and well-being
               </p>
-              <p className="mt-2 text-sm text-primary">
-                Swipe to explore our team
-              </p>
+              {specialty && (
+                <p className="mt-2 text-lg font-semibold text-primary capitalize">
+                  Showing doctors for: {specialty}
+                </p>
+              )}
             </div>
             <div className="px-0">
-              <DoctorsCarousel />
+              <DoctorsCarousel specialty={specialty} />
             </div>
           </div>
         </section>

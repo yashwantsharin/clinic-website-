@@ -1,68 +1,56 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Stethoscope, Heart, Baby, Brain, Bone, Eye } from "lucide-react"
+
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
+import { Heart, Brain, Baby, Bone, Eye } from "lucide-react"
 
 const services = [
   {
-    icon: Stethoscope,
-    title: "General Check-ups",
-    description: "Comprehensive health assessments and preventive care to keep you healthy.",
-  },
-  {
+    name: "Cardiology",
     icon: Heart,
-    title: "Cardiology",
-    description: "Expert cardiac care including heart health monitoring and treatment.",
+    specialty: "cardiology",
   },
   {
-    icon: Baby,
-    title: "Pediatrics",
-    description: "Specialized healthcare for infants, children, and adolescents.",
-  },
-  {
+    name: "Neurology",
     icon: Brain,
-    title: "Neurology",
-    description: "Diagnosis and treatment of nervous system disorders.",
+    specialty: "neurology",
   },
   {
+    name: "Pediatrics",
+    icon: Baby,
+    specialty: "pediatrics",
+  },
+  {
+    name: "Orthopedics",
     icon: Bone,
-    title: "Orthopedics",
-    description: "Care for bones, joints, and musculoskeletal conditions.",
+    specialty: "orthopedics",
   },
   {
+    name: "Ophthalmology",
     icon: Eye,
-    title: "Ophthalmology",
-    description: "Complete eye care services including vision tests and treatments.",
+    specialty: "ophthalmology",
   },
 ]
 
 export function ServicesSection() {
   return (
-    <section className="bg-card py-20">
+    <section className="py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-12 text-center">
-          <span className="mb-2 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Our Services
-          </span>
-          <h2 className="mt-4 text-balance text-3xl font-bold text-foreground md:text-4xl">
-            Comprehensive Healthcare Services
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty text-muted-foreground">
-            We offer a wide range of medical services to meet all your healthcare needs under one roof.
+          <p className="mt-4 text-lg text-muted-foreground">
+            Comprehensive care across all major specialties.
           </p>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <Card 
-              key={service.title} 
-              className="group transition-all duration-300 hover:border-primary/50 hover:shadow-lg"
-            >
-              <CardHeader>
-                <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary">
-                  <service.icon className="size-7 text-primary transition-colors group-hover:text-primary-foreground" />
-                </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-                <CardDescription className="text-base">{service.description}</CardDescription>
-              </CardHeader>
-            </Card>
+            <Link key={service.name} href={`/about?specialty=${service.specialty}`}>
+              <Card className="flex flex-col items-center justify-center p-6 text-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+                <service.icon className="mb-4 size-12 text-primary" />
+                <h3 className="text-xl font-semibold text-foreground">{service.name}</h3>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
