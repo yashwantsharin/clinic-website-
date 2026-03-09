@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Phone, Mail, MapPin, Clock } from "lucide-react"
+import { Phone, Mail, Clock } from "lucide-react"
 
 export function Footer() {
   return (
@@ -52,16 +52,16 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="size-4 text-primary" />
-                <span>+919973622731</span>
+                <a href="tel:+919973622731">+919973622731</a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="size-4 text-primary" />
                 <span>contact@swastikhospital.com</span>
               </li>
               <li className="flex items-start gap-2 text-muted-foreground">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                
                 <Link href="https://share.google/9efbNqBa5EJhBM1g4" className="text-muted-foreground transition-colors hover:text-primary">
-                  Our Location
+                  📍 View on Google Maps
                 </Link>
               </li>
             </ul>

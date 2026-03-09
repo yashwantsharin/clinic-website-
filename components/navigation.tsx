@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Phone, Clock, MapPin } from "lucide-react"
+import { Menu, X, Phone, Clock } from "lucide-react"
 import { useState } from "react"
 
 const navLinks = [
@@ -24,10 +24,10 @@ export function Navigation() {
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-2 text-sm md:justify-between">
           <div className="hidden items-center gap-6 md:flex">
-            <span className="flex items-center gap-2">
+            <a href="tel:+919973622731" className="flex items-center gap-2">
               <Phone className="size-4" />
               <span>+91 9973622731</span>
-            </span>
+            </a>
             <span className="flex items-center gap-2">
               <Clock className="size-4" />
               <span>Mon-Fri: 9AM - 6PM</span>
@@ -39,9 +39,8 @@ export function Navigation() {
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <MapPin className="size-4" />
-            <span className="truncate">
-              https://share.google/nKY1rZosZW4khSRoF
+            <span>
+              📍 View on Google Maps
             </span>
           </a>
         </div>

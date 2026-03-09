@@ -48,8 +48,6 @@ export default function AboutPage() {
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
               Our team of highly qualified and experienced physicians is committed to providing exceptional healthcare with compassion and expertise. Each doctor brings unique skills and specializations to ensure comprehensive care for all patients.
-
-
             </p>
           </div>
         </section>
@@ -57,7 +55,7 @@ export default function AboutPage() {
         {/* Stats Section */}
         <section className="bg-card py-12">
           <div className="mx-auto max-w-7xl px-4">
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:grid-cols-4">
               {clinicStats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary/10">
@@ -80,10 +78,10 @@ export default function AboutPage() {
                 Dedicated professionals committed to your health and well-being
               </p>
               <p className="mt-2 text-sm text-primary">
-                Swipe or use arrows to explore our team
+                Swipe to explore our team
               </p>
             </div>
-            <div className="px-8 md:px-16">
+            <div className="px-0">
               <DoctorsCarousel />
             </div>
           </div>
@@ -145,7 +143,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative">
+                <div className="relative mt-8 lg:mt-0">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-4">
                       <div className="aspect-[3/4] overflow-hidden rounded-2xl bg-muted">

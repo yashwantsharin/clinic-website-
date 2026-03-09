@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, Clock, Phone } from "lucide-react"
+import { Calendar, Clock, Phone } from "lucide-react"
 
 export function CtaSection() {
   return (
@@ -37,7 +37,7 @@ export function CtaSection() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <MapPin className="mt-0.5 size-5 shrink-0 text-primary-foreground/80" />
+                  
                   <div>
                     <p className="font-medium text-primary-foreground">Location</p>
                     <a
@@ -46,7 +46,7 @@ export function CtaSection() {
                       rel="noopener noreferrer"
                       className="text-sm text-primary-foreground/80 underline-offset-4 hover:underline"
                     >
-                     https://share.google/nKY1rZosZW4khSRoF
+                     📍 View on Google Maps
                     </a>
                   </div>
                 </div>

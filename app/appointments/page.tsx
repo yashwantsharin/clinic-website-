@@ -23,7 +23,7 @@ export default function AppointmentsPage() {
       <Navigation />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary/10 via-background to-accent/20 py-12">
+        <section className="bg-gradient-to-br from-primary/10 via-background to-accent/20 py-8 sm:py-12">
           <div className="mx-auto max-w-7xl px-4 text-center">
             <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
               Appointments
@@ -39,7 +39,7 @@ export default function AppointmentsPage() {
         </section>
 
         {/* Main Content */}
-        <section className="bg-background py-12">
+        <section className="bg-background py-8 sm:py-12">
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid gap-8 lg:grid-cols-3">
               {/* Booking Form */}
@@ -95,7 +95,14 @@ export default function AppointmentsPage() {
                       </li>
                       <li className="flex items-start gap-2 text-muted-foreground">
                         <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span>https://share.google/nKY1rZosZW4khSRoF</span>
+                        <a
+                          href="https://share.google/nKY1rZosZW4khSRoF"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline-offset-4 hover:underline"
+                        >
+                          View on Google Maps
+                        </a>
                       </li>
                     </ul>
                   </CardContent>
