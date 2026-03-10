@@ -31,20 +31,17 @@ const timeSlots = [
   "5:30 PM",
 ]
 
-const departments = [
-    "Cardiology",
-    "Dermatology",
-    "Neurology",
-    "Pediatrics",
-    "Orthopedics"
-]
-
 export function AppointmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
-  const [department, setDepartment] = useState<string | undefined>()
+  
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+  const [date, setDate] = useState("")
   const [time, setTime] = useState<string | undefined>()
+  const [reason, setReason] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -52,12 +49,7 @@ export function AppointmentForm() {
     setSubmitStatus("idle")
     setErrorMessage("")
 
-    const formData = new FormData(e.currentTarget)
-    const name = formData.get("name") as string
-    const phone = formData.get("phone") as string
-    const date = formData.get("date") as string
-
-    if (!name || !phone || !department || !date || !time) {
+    if (!name || !phone || !email || !date || !time) {
         setErrorMessage("Please fill in all fields.")
         setSubmitStatus("error")
         setIsSubmitting(false)
@@ -65,24 +57,32 @@ export function AppointmentForm() {
     }
 
     try {
+        console.log("Attempting to add document to Firestore.");
         await addDoc(collection(db, "appointments"), {
             name,
             phone,
-            department,
+            email,
             date,
             time,
+            reason,
             status: "pending",
             createdAt: serverTimestamp()
         })
 
+        console.log("Document added successfully. Setting status to success.");
         setSubmitStatus("success")
-        e.currentTarget.reset()
-        setDepartment(undefined)
+        // Reset form fields
+        setName("")
+        setPhone("")
+        setEmail("")
+        setDate("")
         setTime(undefined)
+        setReason("")
+        setIsSubmitting(false)
     } catch (error) {
+        console.error("Error booking appointment:", error);
         setSubmitStatus("error")
         setErrorMessage("Failed to book appointment. Please try again.")
-    } finally {
         setIsSubmitting(false)
     }
   }
@@ -127,6 +127,8 @@ export function AppointmentForm() {
                 name="name"
                 placeholder="John Doe"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Field>
             <Field>
@@ -137,23 +139,22 @@ export function AppointmentForm() {
                   type="tel"
                   placeholder="+91 9973622731"
                   required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
             </Field>
-             <Field>
-                <FieldLabel htmlFor="department">Department</FieldLabel>
-                <Select name="department" required onValueChange={setDepartment}>
-                  <SelectTrigger id="department">
-                    <SelectValue placeholder="Select a department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((department) => (
-                      <SelectItem key={department} value={department}>
-                        {department}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+            <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="johndoe@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+            </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="date">Preferred Date</FieldLabel>
@@ -163,11 +164,13 @@ export function AppointmentForm() {
                   type="date"
                   min={new Date().toISOString().split("T")[0]}
                   required
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 />
               </Field>
               <Field>
                 <FieldLabel htmlFor="time">Preferred Time</FieldLabel>
-                <Select name="time" required onValueChange={setTime}>
+                <Select name="time" onValueChange={setTime} value={time}>
                   <SelectTrigger id="time">
                     <SelectValue placeholder="Select a time" />
                   </SelectTrigger>
@@ -189,6 +192,8 @@ export function AppointmentForm() {
                 name="reason"
                 placeholder="Please describe the reason for your visit..."
                 rows={4}
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
               />
             </Field>
 
