@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -42,6 +43,8 @@ export function AppointmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
+  const [department, setDepartment] = useState<string | undefined>()
+  const [time, setTime] = useState<string | undefined>()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -52,9 +55,7 @@ export function AppointmentForm() {
     const formData = new FormData(e.currentTarget)
     const name = formData.get("name") as string
     const phone = formData.get("phone") as string
-    const department = formData.get("department") as string
     const date = formData.get("date") as string
-    const time = formData.get("time") as string
 
     if (!name || !phone || !department || !date || !time) {
         setErrorMessage("Please fill in all fields.")
@@ -76,6 +77,8 @@ export function AppointmentForm() {
 
         setSubmitStatus("success")
         e.currentTarget.reset()
+        setDepartment(undefined)
+        setTime(undefined)
     } catch (error) {
         setSubmitStatus("error")
         setErrorMessage("Failed to book appointment. Please try again.")
@@ -138,7 +141,7 @@ export function AppointmentForm() {
             </Field>
              <Field>
                 <FieldLabel htmlFor="department">Department</FieldLabel>
-                <Select name="department" required>
+                <Select name="department" required onValueChange={setDepartment}>
                   <SelectTrigger id="department">
                     <SelectValue placeholder="Select a department" />
                   </SelectTrigger>
@@ -164,7 +167,7 @@ export function AppointmentForm() {
               </Field>
               <Field>
                 <FieldLabel htmlFor="time">Preferred Time</FieldLabel>
-                <Select name="time" required>
+                <Select name="time" required onValueChange={setTime}>
                   <SelectTrigger id="time">
                     <SelectValue placeholder="Select a time" />
                   </SelectTrigger>
