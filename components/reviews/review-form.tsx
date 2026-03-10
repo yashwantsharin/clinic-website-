@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { db } from "@/lib/firebase/client"
+import { addDoc, collection, serverTimestamp } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -41,19 +42,21 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
       review_text: formData.get("review") as string,
     }
 
-    const supabase = createClient()
-    const { error } = await supabase.from("reviews").insert([data])
+    try {
+        await addDoc(collection(db, "reviews"), {
+            ...data,
+            createdAt: serverTimestamp()
+        })
 
-    setIsSubmitting(false)
-
-    if (error) {
-      setSubmitStatus("error")
-      setErrorMessage(error.message)
-    } else {
-      setSubmitStatus("success")
-      setRating(0)
-      e.currentTarget.reset()
-      onReviewSubmitted?.()
+        setSubmitStatus("success")
+        setRating(0)
+        e.currentTarget.reset()
+        onReviewSubmitted?.()
+    } catch (error) {
+        setSubmitStatus("error")
+        setErrorMessage("Failed to submit review. Please try again.")
+    } finally {
+        setIsSubmitting(false)
     }
   }
 

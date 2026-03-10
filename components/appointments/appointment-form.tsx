@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { db } from "@/lib/firebase/client"
+import { addDoc, collection, serverTimestamp } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -29,6 +30,14 @@ const timeSlots = [
   "5:30 PM",
 ]
 
+const departments = [
+    "Cardiology",
+    "Dermatology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics"
+]
+
 export function AppointmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
@@ -41,26 +50,37 @@ export function AppointmentForm() {
     setErrorMessage("")
 
     const formData = new FormData(e.currentTarget)
-    const data = {
-      patient_name: formData.get("name") as string,
-      patient_email: formData.get("email") as string,
-      patient_phone: formData.get("phone") as string,
-      appointment_date: formData.get("date") as string,
-      appointment_time: formData.get("time") as string,
-      reason: formData.get("reason") as string,
+    const name = formData.get("name") as string
+    const phone = formData.get("phone") as string
+    const department = formData.get("department") as string
+    const date = formData.get("date") as string
+    const time = formData.get("time") as string
+
+    if (!name || !phone || !department || !date || !time) {
+        setErrorMessage("Please fill in all fields.")
+        setSubmitStatus("error")
+        setIsSubmitting(false)
+        return
     }
 
-    const supabase = createClient()
-    const { error } = await supabase.from("appointments").insert([data])
+    try {
+        await addDoc(collection(db, "appointments"), {
+            name,
+            phone,
+            department,
+            date,
+            time,
+            status: "pending",
+            createdAt: serverTimestamp()
+        })
 
-    setIsSubmitting(false)
-
-    if (error) {
-      setSubmitStatus("error")
-      setErrorMessage(error.message)
-    } else {
-      setSubmitStatus("success")
-      e.currentTarget.reset()
+        setSubmitStatus("success")
+        e.currentTarget.reset()
+    } catch (error) {
+        setSubmitStatus("error")
+        setErrorMessage("Failed to book appointment. Please try again.")
+    } finally {
+        setIsSubmitting(false)
     }
   }
 
@@ -71,7 +91,7 @@ export function AppointmentForm() {
           <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-green-100">
             <CheckCircle className="size-8 text-green-600" />
           </div>
-          <h3 className="text-xl font-semibold text-green-800">Appointment Requested!</h3>
+          <h3 className="text-xl font-semibold text-green-800">Appointment booked successfully</h3>
           <p className="mt-2 max-w-sm text-green-700">
             Thank you for booking with us. We will contact you shortly to confirm your appointment.
           </p>
@@ -106,19 +126,7 @@ export function AppointmentForm() {
                 required
               />
             </Field>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field>
-                <FieldLabel htmlFor="email">Email Address</FieldLabel>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  required
-                />
-              </Field>
-              <Field>
+            <Field>
                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
                 <Input
                   id="phone"
@@ -127,9 +135,22 @@ export function AppointmentForm() {
                   placeholder="+91 9973622731"
                   required
                 />
+            </Field>
+             <Field>
+                <FieldLabel htmlFor="department">Department</FieldLabel>
+                <Select name="department" required>
+                  <SelectTrigger id="department">
+                    <SelectValue placeholder="Select a department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((department) => (
+                      <SelectItem key={department} value={department}>
+                        {department}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
-            </div>
-
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="date">Preferred Date</FieldLabel>
@@ -168,7 +189,7 @@ export function AppointmentForm() {
               />
             </Field>
 
-            {submitStatus === "error" && (
+            {submitStatus === 'error' && (
               <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertCircle className="size-4" />
                 <span>{errorMessage || "Something went wrong. Please try again."}</span>
@@ -182,7 +203,7 @@ export function AppointmentForm() {
                   Submitting...
                 </>
               ) : (
-                "Request Appointment"
+                "Book Appointment"
               )}
             </Button>
           </FieldGroup>
