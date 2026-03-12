@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-secondary: hsl(var(--secondary));
-  --color-border: hsl(var(--border));
-  --color-card: hsl(var(--card));
-  --color-muted: hsl(var(--muted));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
 }
 
 @layer base {
@@ -59,10 +59,10 @@
 
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--border);
   }
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
