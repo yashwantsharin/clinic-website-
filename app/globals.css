@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+  --color-border: hsl(var(--border));
+  --color-card: hsl(var(--card));
+  --color-muted: hsl(var(--muted));
+}
+
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
