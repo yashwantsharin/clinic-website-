@@ -1,60 +1,67 @@
-
 "use client"
 
 import { useState } from "react"
-import type { Appointment } from "@/app/admin/page"
-import { doc, updateDoc, deleteDoc } from "firebase/firestore"
-import { db, auth } from "@/lib/firebase/client"
+import { signOut } from "firebase/auth"
+import { auth } from "@/lib/firebase/client"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatsCards } from "@/components/admin/stats-cards"
-import AppointmentsTable from "./appointments-table"
+import { AppointmentsTable } from "@/components/admin/appointments-table"
+import { Appointment } from "@/app/admin/page"
 
-export default function AdminDashboard({ appointments }: { appointments: Appointment[] }) {
-  const [filter, setFilter] = useState<"all" | "today" | "pending">("all")
+interface AdminDashboardProps {
+  appointments: Appointment[]
+  onUpdate: () => void
+}
 
-  const handleUpdateStatus = async (id: string, status: "confirmed" | "completed") => {
-    const appointmentRef = doc(db, "appointments", id)
-    await updateDoc(appointmentRef, { status })
+export function AdminDashboard({ appointments, onUpdate }: AdminDashboardProps) {
+  const [filter, setFilter] = useState("all")
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await signOut(auth)
+    router.push("/admin/login")
   }
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this appointment?")) {
-      const appointmentRef = doc(db, "appointments", id)
-      await deleteDoc(appointmentRef)
-    }
-  }
+  const filteredAppointments = appointments.filter(appt => 
+    filter === "all" ? true : appt.status === filter
+  )
 
-  const getFilteredAppointments = () => {
-    const today = new Date().toISOString().split("T")[0]
-    switch (filter) {
-      case "today":
-        return appointments.filter((appt) => appt.date === today)
-      case "pending":
-        return appointments.filter((appt) => appt.status === "pending")
-      case "all":
-      default:
-        return appointments
-    }
+  const stats = {
+    totalAppointments: appointments.length,
+    pendingAppointments: appointments.filter(a => a.status === 'pending').length,
+    confirmedAppointments: appointments.filter(a => a.status === 'confirmed').length,
+    cancelledAppointments: appointments.filter(a => a.status === 'cancelled').length,
   }
-
-  const filteredAppointments = getFilteredAppointments()
 
   return (
-    <div className="min-h-screen bg-gray-100/50 dark:bg-gray-900/50">
-      <header className="flex items-center justify-between h-16 px-4 bg-white border-b shrink-0 dark:bg-gray-950">
-        <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-        <Button onClick={() => auth.signOut()} variant="outline">
-          Logout
-        </Button>
+    <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900">
+       <header className="flex h-16 items-center justify-between border-b bg-white px-6 dark:bg-gray-800">
+        <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleLogout} variant="outline">
+            Logout
+          </Button>
+        </div>
       </header>
-      <main className="p-4 sm:p-6">
-        <StatsCards appointments={appointments} setFilter={setFilter} />
-        <div className="mt-6">
-          <AppointmentsTable
-            appointments={filteredAppointments}
-            onUpdateStatus={handleUpdateStatus}
-            onDelete={handleDelete}
-          />
+
+      <main className="flex-1 p-6">
+        <StatsCards {...stats} />
+
+        <div className="mt-8">
+          <AppointmentsTable appointments={filteredAppointments} onUpdate={onUpdate} />
         </div>
       </main>
     </div>

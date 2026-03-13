@@ -1,30 +1,35 @@
+"use client"
 
-import type { Appointment } from "@/app/admin/page"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase/client"
 import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Appointment } from "@/app/admin/page"
 
-function AppointmentsTable({ 
-  appointments, 
-  onUpdateStatus, 
-  onDelete 
-}: { 
-  appointments: Appointment[],
-  onUpdateStatus: (id: string, status: "confirmed" | "completed") => void,
-  onDelete: (id: string) => void
-}) {
-  const getStatusVariant = (status: Appointment["status"]) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-500"
-      case "confirmed":
-        return "bg-blue-500"
-      case "completed":
-        return "bg-green-500"
-      default:
-        return "bg-gray-500"
+interface AppointmentsTableProps {
+  appointments: Appointment[]
+  onUpdate: () => void
+}
+
+const statusColors: Record<string, string> = {
+  pending: "bg-yellow-500",
+  confirmed: "bg-green-500",
+  cancelled: "bg-red-500",
+}
+
+export function AppointmentsTable({ appointments, onUpdate }: AppointmentsTableProps) {
+  const updateStatus = async (id: string, status: "confirmed" | "cancelled") => {
+    const appointmentRef = doc(db, "appointments", id)
+    await updateDoc(appointmentRef, { status })
+    onUpdate()
+  }
+
+  const deleteAppointment = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this appointment?")) {
+      const appointmentRef = doc(db, "appointments", id)
+      await deleteDoc(appointmentRef)
+      onUpdate()
     }
   }
 
@@ -32,42 +37,50 @@ function AppointmentsTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
+          <TableHead>Patient Name</TableHead>
           <TableHead>Phone</TableHead>
-          <TableHead>Department</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Time</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Preferred Date</TableHead>
+          <TableHead>Preferred Time</TableHead>
+          <TableHead>Reason for Visit</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>
-            <span className="sr-only">Actions</span>
-          </TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {appointments.map((appointment) => (
-          <TableRow key={appointment.id}>
-            <TableCell className="font-medium">{appointment.name}</TableCell>
-            <TableCell>{appointment.phone}</TableCell>
-            <TableCell>{appointment.department}</TableCell>
-            <TableCell>{appointment.date}</TableCell>
-            <TableCell>{appointment.time}</TableCell>
+        {appointments.map((appt) => (
+          <TableRow key={appt.id}>
+            <TableCell>{appt.name}</TableCell>
+            <TableCell>{appt.phone}</TableCell>
+            <TableCell>{appt.email}</TableCell>
+            <TableCell>{appt.date}</TableCell>
+            <TableCell>{appt.time}</TableCell>
+            <TableCell>{appt.reason}</TableCell>
             <TableCell>
-              <Badge className={getStatusVariant(appointment.status)}>{appointment.status}</Badge>
+              <Badge className={statusColors[appt.status]}>{appt.status}</Badge>
             </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button aria-haspopup="true" size="icon" variant="ghost">
-                    <MoreHorizontal className="w-4 h-4" />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onUpdateStatus(appointment.id, "confirmed")}>Confirm</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onUpdateStatus(appointment.id, "completed")}>Mark as Completed</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onDelete(appointment.id)}>Delete</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <TableCell className="space-x-2">
+              {appt.status === "pending" && (
+                <Button size="sm" onClick={() => updateStatus(appt.id, "confirmed")}>
+                  Confirm
+                </Button>
+              )}
+               {appt.status !== "cancelled" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => updateStatus(appt.id, "cancelled")}
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => deleteAppointment(appt.id)}
+              >
+                Delete
+              </Button>
             </TableCell>
           </TableRow>
         ))}
@@ -75,5 +88,3 @@ function AppointmentsTable({
     </Table>
   )
 }
-
-export default AppointmentsTable
