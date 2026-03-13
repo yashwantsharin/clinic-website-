@@ -32,6 +32,7 @@ const timeSlots = [
 ]
 
 export function AppointmentForm() {
+  const [formKey, setFormKey] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
@@ -76,6 +77,7 @@ export function AppointmentForm() {
         setDate("")
         setTime("")
         setReason("")
+        setFormKey(prev => prev + 1)
     } catch (error) {
         console.error("Error booking appointment:", error);
         setSubmitStatus("error")
@@ -116,7 +118,7 @@ export function AppointmentForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} key={formKey}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
