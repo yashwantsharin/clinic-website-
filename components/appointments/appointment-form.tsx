@@ -57,7 +57,6 @@ export function AppointmentForm() {
     }
 
     try {
-        console.log("Attempting to add document to Firestore.");
         await addDoc(collection(db, "appointments"), {
             name,
             phone,
@@ -69,7 +68,6 @@ export function AppointmentForm() {
             createdAt: serverTimestamp()
         })
 
-        console.log("Document added successfully. Setting status to success.");
         setSubmitStatus("success")
         // Reset form fields
         setName("")
@@ -78,11 +76,11 @@ export function AppointmentForm() {
         setDate("")
         setTime(undefined)
         setReason("")
-        setIsSubmitting(false)
     } catch (error) {
         console.error("Error booking appointment:", error);
         setSubmitStatus("error")
         setErrorMessage("Failed to book appointment. Please try again.")
+    } finally {
         setIsSubmitting(false)
     }
   }
