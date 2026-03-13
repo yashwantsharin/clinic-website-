@@ -40,7 +40,7 @@ export function AppointmentForm() {
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
   const [date, setDate] = useState("")
-  const [time, setTime] = useState<string | undefined>()
+  const [time, setTime] = useState("")
   const [reason, setReason] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -74,7 +74,7 @@ export function AppointmentForm() {
         setPhone("")
         setEmail("")
         setDate("")
-        setTime(undefined)
+        setTime("")
         setReason("")
     } catch (error) {
         console.error("Error booking appointment:", error);
