@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { onAuthStateChanged, User } from "firebase/auth"
-import { collection, onSnapshot } from "firebase/firestore"
-import { auth, db } from "@/lib/firebase/client"
-import { AdminDashboard } from "@/components/admin/admin-dashboard"
-import { Spinner } from "@/components/ui/spinner"
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { onAuthStateChanged, User } from 'firebase/auth'
+import { collection, onSnapshot } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase/client'
+import { AdminDashboard } from '@/components/admin/admin-dashboard'
+import { Spinner } from '@/components/ui/spinner'
 
 export interface Appointment {
   id: string
@@ -16,7 +16,7 @@ export interface Appointment {
   date: string
   time: string
   reason: string
-  status: "pending" | "confirmed" | "cancelled"
+  status: 'pending' | 'confirmed' | 'cancelled'
 }
 
 export default function AdminPage() {
@@ -27,25 +27,21 @@ export default function AdminPage() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user)
-      } else {
-        router.push("/admin/login")
-      }
+      setUser(user)
+      setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [router])
+  }, [])
 
   useEffect(() => {
     if (user) {
-      const unsubscribe = onSnapshot(collection(db, "appointments"), (snapshot) => {
-        const appts = snapshot.docs.map(doc => ({
+      const unsubscribe = onSnapshot(collection(db, 'appointments'), (snapshot) => {
+        const appts = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Appointment[]
         setAppointments(appts)
-        setLoading(false)
       })
 
       return () => unsubscribe()
@@ -65,6 +61,7 @@ export default function AdminPage() {
   }
 
   if (!user) {
+    router.push('/admin/login')
     return null
   }
 
