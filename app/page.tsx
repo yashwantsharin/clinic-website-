@@ -1,3 +1,4 @@
+
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { HeroSection } from "@/components/home/hero-section"
