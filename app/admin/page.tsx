@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChanged, User } from 'firebase/auth'
-import { collection, onSnapshot } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase/client'
 import { AdminDashboard } from '@/components/admin/admin-dashboard'
 import { Spinner } from '@/components/ui/spinner'
@@ -34,22 +34,23 @@ export default function AdminPage() {
     return () => unsubscribe()
   }, [])
 
+  const fetchAppointments = useCallback(async () => {
+    const querySnapshot = await getDocs(collection(db, 'appointments'))
+    const appts = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Appointment[]
+    setAppointments(appts)
+  }, [])
+
   useEffect(() => {
     if (user) {
-      const unsubscribe = onSnapshot(collection(db, 'appointments'), (snapshot) => {
-        const appts = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Appointment[]
-        setAppointments(appts)
-      })
-
-      return () => unsubscribe()
+      fetchAppointments()
     }
-  }, [user])
+  }, [user, fetchAppointments])
 
   const handleUpdate = () => {
-    // onSnapshot handles updates automatically
+    fetchAppointments()
   }
 
   if (loading) {
