@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { redirect } from 'next/navigation'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { collection, getDocs } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase/client'
@@ -23,35 +23,29 @@ export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [appointments, setAppointments] = useState<Appointment[]>([])
-  const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser)
+        const snapshot = await getDocs(collection(db, "appointments"))
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Appointment[]
+        setAppointments(data)
+      } else {
+        setUser(null)
+      }
       setLoading(false)
     })
-
     return () => unsubscribe()
   }, [])
 
-  const fetchAppointments = useCallback(async () => {
-    const querySnapshot = await getDocs(collection(db, 'appointments'))
-    const appts = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Appointment[]
-    setAppointments(appts)
-  }, [])
-
-  useEffect(() => {
+  const handleUpdate = async () => {
     if (user) {
-      fetchAppointments()
+        const snapshot = await getDocs(collection(db, "appointments"));
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Appointment[];
+        setAppointments(data);
     }
-  }, [user, fetchAppointments])
-
-  const handleUpdate = () => {
-    fetchAppointments()
-  }
+  };
 
   if (loading) {
     return (
@@ -62,8 +56,8 @@ export default function AdminPage() {
   }
 
   if (!user) {
-    router.push('/admin/login')
-    return null
+    redirect('/admin/login');
+    return null;
   }
 
   return <AdminDashboard appointments={appointments} onUpdate={handleUpdate} />
