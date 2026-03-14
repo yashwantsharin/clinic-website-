@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: 'yashwantsharin@gmail.com', // Your clinic's email address
+      to: 'yashwantsharin070@gmail.com', // Your clinic's email address
       subject: 'New Appointment Booking',
       html: `
         <p><strong>New Appointment Request</strong></p>
