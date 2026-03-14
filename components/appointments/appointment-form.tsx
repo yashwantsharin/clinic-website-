@@ -67,7 +67,19 @@ export function AppointmentForm() {
             reason,
             status: "pending",
             createdAt: serverTimestamp()
-        })
+        });
+
+        try {
+            await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, phone, email, date, time, reason }),
+            });
+        } catch (emailError) {
+            console.error("Error sending email notification:", emailError);
+        }
 
         setSubmitStatus("success")
         // Reset form fields
