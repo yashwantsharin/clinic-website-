@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { collection, onSnapshot, QueryDocumentSnapshot } from "firebase/firestore"
+import { onAuthStateChanged, User } from "firebase/auth"
+import { collection, onSnapshot } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase/client"
 import { AdminDashboard } from "@/components/admin/admin-dashboard"
 import { Spinner } from "@/components/ui/spinner"
@@ -20,16 +20,22 @@ export interface Appointment {
 }
 
 export default function AdminPage() {
-  const [user, loading] = useAuthState(auth)
-  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [appointments, setAppointments] = useState<Appointment[]>([])
-  const [dataLoaded, setDataLoaded] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/admin/login")
-    }
-  }, [user, loading, router])
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user)
+      } else {
+        router.push("/admin/login")
+      }
+    })
+
+    return () => unsubscribe()
+  }, [router])
 
   useEffect(() => {
     if (user) {
@@ -39,7 +45,7 @@ export default function AdminPage() {
           ...doc.data(),
         })) as Appointment[]
         setAppointments(appts)
-        setDataLoaded(true)
+        setLoading(false)
       })
 
       return () => unsubscribe()
@@ -47,11 +53,15 @@ export default function AdminPage() {
   }, [user])
 
   const handleUpdate = () => {
-    // Re-fetch or update data if needed, onSnapshot handles this mostly
+    // onSnapshot handles updates automatically
   }
 
-  if (loading || !dataLoaded) {
-    return <div className="flex h-screen items-center justify-center"><Spinner size="large" /></div>
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner />
+      </div>
+    )
   }
 
   if (!user) {
