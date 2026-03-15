@@ -40,52 +40,51 @@ export default function AdminPage() {
         router.push('/admin/login')
       }
       setLoading(false)
-    })
+    });
 
-    let appointmentsUnsubscribe: () => void;
-    if (user) {
-        const q = query(collection(db, "appointments"));
-        appointmentsUnsubscribe = onSnapshot(q, (querySnapshot) => {
-            const appointmentsList = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as Appointment))
+    return () => authUnsubscribe();
+  }, [router]);
 
-            // Helper function to convert time string to minutes from midnight for sorting
-            const timeToMinutes = (timeStr: string) => {
-                const [time, modifier] = timeStr.split(' ');
-                let [hours, minutes] = time.split(':').map(Number);
-                if (modifier === 'PM' && hours < 12) {
-                    hours += 12;
-                }
-                if (modifier === 'AM' && hours === 12) { // Handle midnight case (12 AM)
-                    hours = 0;
-                }
-                return hours * 60 + minutes;
-            };
+  useEffect(() => {
+    if (!user) {
+        setAppointments([]);
+        return;
+    }
 
-            const sortedAppointments = appointmentsList.sort((a, b) => {
-                const dateComparison = a.date.localeCompare(b.date);
-                if (dateComparison !== 0) {
-                    return dateComparison;
-                }
-                // If dates are the same, compare by time
-                return timeToMinutes(a.time) - timeToMinutes(b.time);
-            });
+    const q = query(collection(db, "appointments"));
+    const appointmentsUnsubscribe = onSnapshot(q, (querySnapshot) => {
+        const appointmentsList = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as Appointment));
 
-            setAppointments(sortedAppointments)
-        }, (error) => {
-            console.error("Error fetching appointments:", error)
+        const timeToMinutes = (timeStr: string) => {
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            if (modifier === 'PM' && hours < 12) {
+                hours += 12;
+            }
+            if (modifier === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            return hours * 60 + minutes;
+        };
+
+        const sortedAppointments = appointmentsList.sort((a, b) => {
+            const dateComparison = a.date.localeCompare(b.date);
+            if (dateComparison !== 0) {
+                return dateComparison;
+            }
+            return timeToMinutes(a.time) - timeToMinutes(b.time);
         });
-    }
 
-    return () => {
-        authUnsubscribe()
-        if (appointmentsUnsubscribe) {
-            appointmentsUnsubscribe()
-        }
-    }
-  }, [router, user])
+        setAppointments(sortedAppointments);
+    }, (error) => {
+        console.error("Error fetching appointments:", error);
+    });
+
+    return () => appointmentsUnsubscribe();
+  }, [user]);
 
   const handleUpdateStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
