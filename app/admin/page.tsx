@@ -1,15 +1,17 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChanged, signOut, User } from 'firebase/auth'
-import { collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import { collection, onSnapshot, query, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Spinner } from '@/components/ui/spinner'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AppointmentCalendar } from '@/components/admin/appointment-calendar'
 
 export interface Appointment {
   id: string
@@ -29,39 +31,43 @@ export default function AdminPage() {
   const [filter, setFilter] = useState("all")
   const router = useRouter()
 
-  const fetchAppointments = useCallback(async () => {
-    try {
-      const appointmentsCollection = collection(db, 'appointments')
-      const snapshot = await getDocs(appointmentsCollection)
-      const appointmentsList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Appointment))
-      setAppointments(appointmentsList)
-    } catch (error) {
-      console.error("Error fetching appointments:", error)
-    }
-  }, [])
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const authUnsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser)
-        fetchAppointments()
       } else {
         setUser(null)
         router.push('/admin/login')
       }
       setLoading(false)
     })
-    return () => unsubscribe()
-  }, [router, fetchAppointments])
+
+    let appointmentsUnsubscribe: () => void;
+    if (user) {
+        const q = query(collection(db, "appointments"));
+        appointmentsUnsubscribe = onSnapshot(q, (querySnapshot) => {
+            const appointmentsList = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as Appointment))
+            setAppointments(appointmentsList)
+        }, (error) => {
+            console.error("Error fetching appointments:", error)
+        });
+    }
+
+    return () => {
+        authUnsubscribe()
+        if (appointmentsUnsubscribe) {
+            appointmentsUnsubscribe()
+        }
+    }
+  }, [router, user])
 
   const handleUpdateStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
       const appointmentRef = doc(db, 'appointments', id)
       await updateDoc(appointmentRef, { status })
-      fetchAppointments()
     } catch (error) {
       console.error("Error updating status:", error)
     }
@@ -72,7 +78,6 @@ export default function AdminPage() {
       if(window.confirm("Are you sure you want to delete this appointment?")) {
         const appointmentRef = doc(db, 'appointments', id)
         await deleteDoc(appointmentRef)
-        fetchAppointments()
       }
     } catch (error) {
         console.error("Error deleting document:", error)
@@ -154,64 +159,75 @@ export default function AdminPage() {
             </Card>
         </div>
         
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Appointments</CardTitle>
-              <div className="w-[180px]">
-                <Select value={filter} onValueChange={setFilter}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead className="hidden md:table-cell">Phone</TableHead>
-                        <TableHead className="hidden md:table-cell">Email</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredAppointments.length > 0 ? (
-                        filteredAppointments.map((appt) => (
-                            <TableRow key={appt.id}>
-                                <TableCell className="font-medium">{appt.name}</TableCell>
-                                <TableCell className="hidden md:table-cell">{appt.phone}</TableCell>
-                                <TableCell className="hidden md:table-cell">{appt.email}</TableCell>
-                                <TableCell>{appt.date}</TableCell>
-                                <TableCell>{appt.time}</TableCell>
-                                <TableCell>{appt.status}</TableCell>
-                                <TableCell className="flex gap-2">
-                                    <Button onClick={() => handleUpdateStatus(appt.id, 'confirmed')} size="sm" disabled={appt.status === 'confirmed'}>Confirm</Button>
-                                    <Button onClick={() => handleUpdateStatus(appt.id, 'cancelled')} size="sm" variant="outline" disabled={appt.status === 'cancelled'}>Cancel</Button>
-                                    <Button onClick={() => handleDelete(appt.id)} size="sm" variant="destructive">Delete</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    ) : (
+        <Tabs defaultValue="list">
+          <TabsList>
+            <TabsTrigger value="list">List View</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+          </TabsList>
+          <TabsContent value="list">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Appointments</CardTitle>
+                  <div className="w-[180px]">
+                    <Select value={filter} onValueChange={setFilter}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="confirmed">Confirmed</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell colSpan={7} className="text-center">No appointments found.</TableCell>
+                            <TableHead>Name</TableHead>
+                            <TableHead className="hidden md:table-cell">Phone</TableHead>
+                            <TableHead className="hidden md:table-cell">Email</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Time</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredAppointments.length > 0 ? (
+                            filteredAppointments.map((appt) => (
+                                <TableRow key={appt.id}>
+                                    <TableCell className="font-medium">{appt.name}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{appt.phone}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{appt.email}</TableCell>
+                                    <TableCell>{appt.date}</TableCell>
+                                    <TableCell>{appt.time}</TableCell>
+                                    <TableCell>{appt.status}</TableCell>
+                                    <TableCell className="flex gap-2">
+                                        <Button onClick={() => handleUpdateStatus(appt.id, 'confirmed')} size="sm" disabled={appt.status === 'confirmed'}>Confirm</Button>
+                                        <Button onClick={() => handleUpdateStatus(appt.id, 'cancelled')} size="sm" variant="outline" disabled={appt.status === 'cancelled'}>Cancel</Button>
+                                        <Button onClick={() => handleDelete(appt.id)} size="sm" variant="destructive">Delete</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={7} className="text-center">No appointments found.</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="calendar">
+            <AppointmentCalendar />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   )
