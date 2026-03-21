@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { Card, CardContent } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 
 interface Doctor {
   id: number
@@ -15,12 +15,13 @@ interface Doctor {
 }
 
 export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
+  const [api, setApi] = useState<CarouselApi>()
   const [activeCard, setActiveCard] = useState<number | null>(null)
   const doctors: Doctor[] = [
     {
       id: 1,
       name: "Dr. Rahul Raj",
-      specialty: "Emergency",
+      specialty: "emergency",
       department: "Director",
       degree: "",
       image: "/images/doctors/dr-rahul-raj.jpg",
@@ -28,7 +29,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 2,
       name: "Dr. Nihal Singh",
-      specialty: "Orthopedic",
+      specialty: "orthopedic",
       department: "",
       degree: "MBBS",
       image: "/images/doctors/dr-nihal-singh.jpg",
@@ -36,7 +37,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 3,
       name: "Dr. Manoj Kumar",
-      specialty: "Medicine",
+      specialty: "medicine",
       department: "",
       degree: "MBBS (Hons.), MD (Bangalore)",
       image: "/images/doctors/dr-manoj-kumar.jpg",
@@ -44,7 +45,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 4,
       name: "Dr. Ritu Ranjan Jha",
-      specialty: "Obg & Gynec",
+      specialty: "obg-gynec",
       department: "",
       degree: "MBBS (Hons.), Stri evam Prasav Rog Visheshagya",
       image: "/images/doctors/dr-ritu-ranjan-jha.jpg",
@@ -52,7 +53,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 5,
       name: "Dr. Anjali Raj",
-      specialty: "Physiotherapy",
+      specialty: "physiotherapy",
       department: "",
       degree: "BPT (Delhi)",
       image: "/images/doctors/dr-anjali-raj.jpg",
@@ -60,7 +61,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 6,
       name: "Dr. Rohit Kumar",
-      specialty: "Ayurveda",
+      specialty: "ayurveda",
       department: "",
       degree: "BAMS",
       image: "/images/doctors/dr-rohit-kumar.jpg",
@@ -68,7 +69,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 7,
       name: "Dr. RajRani K.",
-      specialty: "Obg & Gynec",
+      specialty: "obg-gynec",
       department: "",
       degree: "MBBS",
       image: "/images/doctors/dr-rajrani-k.jpg",
@@ -76,7 +77,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 8,
       name: "Dr. Janu Raj",
-      specialty: "Surgery",
+      specialty: "surgery",
       department: "",
       degree: "MBBS",
       image: "/images/doctors/dr-janu-raj.jpg",
@@ -84,7 +85,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 9,
       name: "Dr. Ashish Gupta",
-      specialty: "Anesthesia",
+      specialty: "anesthesia",
       department: "",
       degree: "MBBS MD (Anaesthesia)",
       image: "/images/doctors/dr-ashish-gupta.jpg",
@@ -92,7 +93,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 10,
       name: "Dr. Nandani K.",
-      specialty: "Dental",
+      specialty: "dental",
       department: "",
       degree: "BDS",
       image: "/images/doctors/dr-nandani-k.jpg",
@@ -100,7 +101,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 11,
       name: "Dr. Sudipta Das",
-      specialty: "Orthopedic",
+      specialty: "orthopedic",
       department: "",
       degree: "MBBS MS (Ortho)",
       image: "/images/doctors/dr-sudipta-das.jpg",
@@ -108,22 +109,34 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     {
       id: 12,
       name: "Dr. Afzal Husain Kasmi",
-      specialty: "Surgery",
+      specialty: "surgery",
       department: "",
       degree: "MBBS MS",
       image: "/images/doctors/dr-afzal-husain-kasmi.jpg",
     }
   ];
 
-  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(doctors)
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(doctors);
 
   useEffect(() => {
     if (specialty) {
-      setFilteredDoctors(doctors.filter(d => d.specialty.toLowerCase() === specialty.toLowerCase()))
+      const specialtyDoctors = doctors.filter(
+        (d) => d.specialty.toLowerCase() === specialty.toLowerCase()
+      );
+      setFilteredDoctors(specialtyDoctors);
+      if (specialtyDoctors.length > 0) {
+        setTimeout(() => {
+          if (api) {
+            api.scrollTo(0);
+            setActiveCard(0);
+          }
+        }, 100);
+      }
     } else {
-      setFilteredDoctors(doctors)
+      setFilteredDoctors(doctors);
+      setActiveCard(null);
     }
-  }, [specialty])
+  }, [specialty, api]);
 
   if (filteredDoctors.length === 0) {
     return <p className="text-center text-muted-foreground">No doctors found for this specialty.</p>
@@ -131,7 +144,8 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
 
   return (
     <Carousel 
-      opts={{ align: "start", loop: true }}
+      setApi={setApi}
+      opts={{ align: "start", loop: false }}
       className="w-full"
     >
       <CarouselContent>

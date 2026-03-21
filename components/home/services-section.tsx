@@ -1,37 +1,52 @@
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Brain, Baby, Bone, Eye, Stethoscope } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Siren, Bone, Stethoscope, Baby, HeartPulse, Leaf, Scissors, Bed, Smile } from "lucide-react";
 
 const services = [
     {
-        name: "General Checkup",
-        icon: Stethoscope,
-        specialty: "general-checkup",
+        name: "Emergency",
+        icon: Siren,
+        specialty: "emergency",
     },
     {
-        name: "Cardiology",
-        icon: Heart,
-        specialty: "cardiology",
-    },
-    {
-        name: "Neurology",
-        icon: Brain,
-        specialty: "neurology",
-    },
-    {
-        name: "Pediatrics",
-        icon: Baby,
-        specialty: "pediatrics",
-    },
-    {
-        name: "Orthopedics",
+        name: "Orthopedic",
         icon: Bone,
-        specialty: "orthopedics",
+        specialty: "orthopedic",
     },
     {
-        name: "Ophthalmology",
-        icon: Eye,
-        specialty: "ophthalmology",
+        name: "Medicine",
+        icon: Stethoscope,
+        specialty: "medicine",
+    },
+    {
+        name: "Obg & Gynec",
+        icon: Baby,
+        specialty: "obg-gynec",
+    },
+    {
+        name: "Physiotherapy",
+        icon: HeartPulse,
+        specialty: "physiotherapy",
+    },
+    {
+        name: "Ayurveda",
+        icon: Leaf,
+        specialty: "ayurveda",
+    },
+    {
+        name: "Surgery",
+        icon: Scissors,
+        specialty: "surgery",
+    },
+    {
+        name: "Anesthesia",
+        icon: Bed,
+        specialty: "anesthesia",
+    },
+    {
+        name: "Dental",
+        icon: Smile,
+        specialty: "dental",
     },
 ];
 
@@ -49,8 +64,8 @@ export function ServicesSection() {
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <Link key={service.name} href={`/about?specialty=${service.specialty}`}>
-              <Card className="flex flex-col items-center justify-center p-6 text-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+            <Link key={service.name} href={`/about?specialty=${service.specialty}`} className="h-full">
+              <Card className="flex h-full flex-col items-center justify-center p-6 text-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
                 <service.icon className="mb-4 size-12 text-primary" />
                 <h3 className="text-xl font-semibold text-foreground">{service.name}</h3>
               </Card>
