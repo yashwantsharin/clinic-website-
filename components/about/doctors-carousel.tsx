@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Card, CardContent } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
+import { type CarouselApi } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
 interface Doctor {
   id: number
@@ -17,12 +17,13 @@ interface Doctor {
 export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
   const [api, setApi] = useState<CarouselApi>()
   const [activeCard, setActiveCard] = useState<number | null>(null)
+
   const doctors: Doctor[] = [
     {
       id: 1,
       name: "Dr. Rahul Raj",
       specialty: "emergency",
-      department: "Director",
+      department: "Emergency",
       degree: "",
       image: "/images/doctors/dr-rahul-raj.jpg",
     },
@@ -30,7 +31,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 2,
       name: "Dr. Nihal Singh",
       specialty: "orthopedic",
-      department: "",
+      department: "Orthopedic",
       degree: "MBBS",
       image: "/images/doctors/dr-nihal-singh.jpg",
     },
@@ -38,7 +39,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 3,
       name: "Dr. Manoj Kumar",
       specialty: "medicine",
-      department: "",
+      department: "Medicine",
       degree: "MBBS (Hons.), MD (Bangalore)",
       image: "/images/doctors/dr-manoj-kumar.jpg",
     },
@@ -46,7 +47,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 4,
       name: "Dr. Ritu Ranjan Jha",
       specialty: "obg-gynec",
-      department: "",
+      department: "Obg & Gynec",
       degree: "MBBS (Hons.), Stri evam Prasav Rog Visheshagya",
       image: "/images/doctors/dr-ritu-ranjan-jha.jpg",
     },
@@ -54,7 +55,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 5,
       name: "Dr. Anjali Raj",
       specialty: "physiotherapy",
-      department: "",
+      department: "Physiotherapy",
       degree: "BPT (Delhi)",
       image: "/images/doctors/dr-anjali-raj.jpg",
     },
@@ -62,31 +63,31 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 6,
       name: "Dr. Rohit Kumar",
       specialty: "ayurveda",
-      department: "",
+      department: "Ayurveda",
       degree: "BAMS",
       image: "/images/doctors/dr-rohit-kumar.jpg",
     },
     {
-      id: 7,
-      name: "Dr. RajRani K.",
-      specialty: "obg-gynec",
-      department: "",
-      degree: "MBBS",
-      image: "/images/doctors/dr-rajrani-k.jpg",
+        id: 7,
+        name: "Dr. RajRani K.",
+        specialty: "obg-gynec",
+        department: "Obg & Gynec",
+        degree: "MBBS",
+        image: "/images/doctors/dr-rajrani-k.jpg",
     },
     {
-      id: 8,
-      name: "Dr. Janu Raj",
-      specialty: "surgery",
-      department: "",
-      degree: "MBBS",
-      image: "/images/doctors/dr-janu-raj.jpg",
+        id: 8,
+        name: "Dr. Janu Raj",
+        specialty: "surgery",
+        department: "Surgery",
+        degree: "MBBS",
+        image: "/images/doctors/dr-janu-raj.jpg",
     },
     {
       id: 9,
       name: "Dr. Ashish Gupta",
       specialty: "anesthesia",
-      department: "",
+      department: "Anesthesia",
       degree: "MBBS MD (Anaesthesia)",
       image: "/images/doctors/dr-ashish-gupta.jpg",
     },
@@ -94,7 +95,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 10,
       name: "Dr. Nandani K.",
       specialty: "dental",
-      department: "",
+      department: "Dental",
       degree: "BDS",
       image: "/images/doctors/dr-nandani-k.jpg",
     },
@@ -102,7 +103,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 11,
       name: "Dr. Sudipta Das",
       specialty: "orthopedic",
-      department: "",
+      department: "Orthopedic",
       degree: "MBBS MS (Ortho)",
       image: "/images/doctors/dr-sudipta-das.jpg",
     },
@@ -110,37 +111,24 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       id: 12,
       name: "Dr. Afzal Husain Kasmi",
       specialty: "surgery",
-      department: "",
+      department: "Surgery",
       degree: "MBBS MS",
       image: "/images/doctors/dr-afzal-husain-kasmi.jpg",
     }
   ];
 
   useEffect(() => {
-    if (specialty && api) {
-      const doctorIndex = doctors.findIndex(
-        (d) => d.specialty.toLowerCase() === specialty.toLowerCase()
-      );
-
-      if (doctorIndex !== -1) {
-        // Set the overlay to be open
-        setActiveCard(doctorIndex);
-        
-        // Scroll the carousel to the card
-        api.scrollTo(doctorIndex);
-
-        // Optional: Forcing a browser scroll to the element if it's off-screen
+    if (specialty) {
+      const index = doctors.findIndex(d => d.specialty === specialty)
+      if (index !== -1) {
+        setActiveCard(index)
         setTimeout(() => {
-          const cardElement = document.getElementById(`doctor-card-${doctorIndex}`);
-          cardElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-        }, 100); // A small delay to ensure the carousel has settled
-      } else {
-        setActiveCard(null);
+          const el = document.getElementById(`doctor-card-${index}`)
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 300)
       }
-    } else {
-      setActiveCard(null);
     }
-  }, [specialty, api]);
+  }, [specialty])
 
   return (
     <Carousel 
@@ -172,8 +160,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
                     {doctor.degree && <p className="text-sm font-light text-white/80">{doctor.degree}</p>}
                     <div className="mt-3 h-px bg-white/20" />
                     <div className="mt-3 flex items-center justify-between gap-2">
-                        <p className="text-base font-semibold capitalize">{doctor.specialty.replace('-', ' & ')}</p>
-                        {doctor.department && <p className="rounded-full bg-white/10 px-2 py-0.5 text-xs">{doctor.department}</p>}
+                        <p className="text-base font-semibold capitalize">{doctor.department}</p>
                     </div>
                   </div>
               </div>
