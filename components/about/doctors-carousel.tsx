@@ -15,6 +15,7 @@ interface Doctor {
 }
 
 export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
+  const [activeCard, setActiveCard] = useState<number | null>(null)
   const doctors: Doctor[] = [
     {
       id: 1,
@@ -134,10 +135,13 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       className="w-full"
     >
       <CarouselContent>
-        {filteredDoctors.map((doctor) => (
+        {filteredDoctors.map((doctor, index) => (
           <CarouselItem key={doctor.id} className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
             <div className="p-2">
-              <div className="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-lg">
+              <div 
+                className="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-lg"
+                onClick={() => setActiveCard(activeCard === index ? null : index)}
+              >
                   <Image
                     src={doctor.image}
                     alt={doctor.name}
@@ -145,7 +149,11 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
                     height={533}
                     className="size-full object-cover object-top transition-transform duration-300 ease-in-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 flex translate-y-full flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-4 text-white transition-transform duration-500 ease-in-out group-hover:translate-y-0">
+                  <div 
+                    className={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-4 text-white transition-transform duration-500 ease-in-out ${
+                      activeCard === index ? 'translate-y-0' : 'translate-y-full'
+                    } md:translate-y-full md:group-hover:translate-y-0`}
+                  >
                     <h3 className="text-xl font-bold tracking-tight">{doctor.name}</h3>
                     {doctor.degree && <p className="text-sm font-light text-white/80">{doctor.degree}</p>}
                     <div className="mt-3 h-px bg-white/20" />
