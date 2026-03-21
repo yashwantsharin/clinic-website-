@@ -118,17 +118,16 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
   ];
 
   useEffect(() => {
-    if (specialty) {
+    if (specialty && api) {
       const index = doctors.findIndex(d => d.specialty === specialty)
       if (index !== -1) {
         setActiveCard(index)
         setTimeout(() => {
-          const el = document.getElementById(`doctor-card-${index}`)
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          api.scrollTo(index)
         }, 300)
       }
     }
-  }, [specialty])
+  }, [specialty, api])
 
   return (
     <Carousel 
