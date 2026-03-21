@@ -1,49 +1,80 @@
-'use client'
-
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
 import { DoctorsCarousel } from "@/components/about/doctors-carousel";
-import { CtaSection } from "@/components/home/cta-section";
+import { GraduationCap, Award, Heart, Users, Stethoscope, Clock } from "lucide-react";
 
-function AboutPageContent() {
-  const searchParams = useSearchParams();
-  const specialty = searchParams.get('specialty');
+export const metadata = {
+  title: "Our Doctors | Swastik Hospital",
+  description: "Meet our team of experienced and compassionate doctors.",
+};
 
-  return (
-    <>
-      <section className="py-12 md:py-20 lg:py-24 bg-muted/30">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-                About Us
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-                We are dedicated to providing compassionate, high-quality healthcare. Our team of experienced professionals is here to serve you and your family.
-            </p>
-        </div>
-      </section>
-
-      <section className="py-12 md:py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Our Doctors
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Meet our team of dedicated and experienced medical professionals.
-            </p>
-          </div>
-          <DoctorsCarousel specialty={specialty} />
-        </div>
-      </section>
-      <CtaSection />
-    </>
-  )
-}
+const clinicStats = [
+    { icon: Users, value: "50,000+", label: "Patients Treated" },
+    { icon: Award, value: "25+", label: "Awards Won" },
+    { icon: Clock, value: "20+", label: "Years of Service" },
+    { icon: Stethoscope, value: "15+", label: "Specializations" },
+]
 
 export default function AboutPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AboutPageContent />
-    </Suspense>
+    <div className="flex min-h-screen flex-col">
+      <Navigation />
+      <main className="flex-1">
+        <section className="bg-gradient-to-br from-primary/10 via-background to-accent/20 py-16 md:py-24">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+              Our Medical Team
+            </span>
+            <h1 className="mt-4 text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+              Meet Our Expert Doctors
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
+              Our team of highly qualified and experienced physicians is committed to providing exceptional healthcare with compassion and expertise.
+            </p>
+          </div>
+        </section>
+
+        <section className="bg-card py-12">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+              {clinicStats.map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary/10">
+                    <stat.icon className="size-6 text-primary" />
+                  </div>
+                  <p className="text-2xl font-bold text-foreground md:text-3xl">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-background py-16 md:py-24">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold text-foreground">Our Specialists</h2>
+              <p className="mt-4 text-muted-foreground">
+                Dedicated professionals committed to your health and well-being
+              </p>
+            </div>
+            <DoctorsCarousel />
+          </div>
+        </section>
+
+        <section className="bg-primary py-16">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <h2 className="text-3xl font-bold text-primary-foreground">Ready to Schedule an Appointment?</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-primary-foreground/90">
+              Choose from our team of expert physicians and book your consultation today.
+            </p>
+            <a href="/appointments" className="mt-8 inline-flex items-center justify-center gap-2 rounded-md bg-background px-6 py-3 font-medium text-foreground transition-colors hover:bg-background/90">
+              Book Appointment
+            </a>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   )
 }

@@ -14,7 +14,7 @@ interface Doctor {
   image: string
 }
 
-export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
+export function DoctorsCarousel() {
   const [api, setApi] = useState<CarouselApi>()
   const [activeCard, setActiveCard] = useState<number | null>(null)
 
@@ -116,19 +116,6 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       image: "/images/doctors/dr-afzal-husain-kasmi.jpg",
     }
   ];
-
-  useEffect(() => {
-    if (specialty) {
-      const index = doctors.findIndex(d => d.specialty === specialty)
-      if (index !== -1) {
-        setActiveCard(index)
-        setTimeout(() => {
-          const el = document.getElementById(`doctor-card-${index}`)
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }, 300)
-      }
-    }
-  }, [specialty])
 
   return (
     <Carousel 
