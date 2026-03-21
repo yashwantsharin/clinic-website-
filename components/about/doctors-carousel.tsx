@@ -116,31 +116,31 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
     }
   ];
 
-  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(doctors);
-
   useEffect(() => {
-    if (specialty) {
-      const specialtyDoctors = doctors.filter(
+    if (specialty && api) {
+      const doctorIndex = doctors.findIndex(
         (d) => d.specialty.toLowerCase() === specialty.toLowerCase()
       );
-      setFilteredDoctors(specialtyDoctors);
-      if (specialtyDoctors.length > 0) {
+
+      if (doctorIndex !== -1) {
+        // Set the overlay to be open
+        setActiveCard(doctorIndex);
+        
+        // Scroll the carousel to the card
+        api.scrollTo(doctorIndex);
+
+        // Optional: Forcing a browser scroll to the element if it's off-screen
         setTimeout(() => {
-          if (api) {
-            api.scrollTo(0);
-            setActiveCard(0);
-          }
-        }, 100);
+          const cardElement = document.getElementById(`doctor-card-${doctorIndex}`);
+          cardElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }, 100); // A small delay to ensure the carousel has settled
+      } else {
+        setActiveCard(null);
       }
     } else {
-      setFilteredDoctors(doctors);
       setActiveCard(null);
     }
   }, [specialty, api]);
-
-  if (filteredDoctors.length === 0) {
-    return <p className="text-center text-muted-foreground">No doctors found for this specialty.</p>
-  }
 
   return (
     <Carousel 
@@ -149,8 +149,8 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
       className="w-full"
     >
       <CarouselContent>
-        {filteredDoctors.map((doctor, index) => (
-          <CarouselItem key={doctor.id} className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+        {doctors.map((doctor, index) => (
+          <CarouselItem key={doctor.id} id={`doctor-card-${index}`} className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
             <div className="p-2">
               <div 
                 className="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-lg"
@@ -172,7 +172,7 @@ export function DoctorsCarousel({ specialty }: { specialty: string | null }) {
                     {doctor.degree && <p className="text-sm font-light text-white/80">{doctor.degree}</p>}
                     <div className="mt-3 h-px bg-white/20" />
                     <div className="mt-3 flex items-center justify-between gap-2">
-                        <p className="text-base font-semibold">{doctor.specialty}</p>
+                        <p className="text-base font-semibold capitalize">{doctor.specialty.replace('-', ' & ')}</p>
                         {doctor.department && <p className="rounded-full bg-white/10 px-2 py-0.5 text-xs">{doctor.department}</p>}
                     </div>
                   </div>
