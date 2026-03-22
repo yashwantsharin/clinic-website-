@@ -8,9 +8,9 @@ import { Timestamp } from "firebase/firestore"
 
 export interface Review {
   id: string
-  name: string
+  patient_name: string
   rating: number
-  review: string
+  review_text: string
   createdAt: Timestamp
 }
 
@@ -87,14 +87,14 @@ export function ReviewsList({ reviews, isLoading, error }: ReviewsListProps) {
                 <div className="flex-1">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h4 className="font-semibold text-foreground">{review.name}</h4>
+                      <h4 className="font-semibold text-foreground">{review.patient_name}</h4>
                       <StarRating rating={review.rating} size="sm" />
                     </div>
                     <time className="text-xs text-muted-foreground">
                       {formatDate(review.createdAt)}
                     </time>
                   </div>
-                  <p className="mt-3 text-pretty text-muted-foreground">{review.review}</p>
+                  <p className="mt-3 text-pretty text-muted-foreground">{review.review_text}</p>
                 </div>
               </div>
             </CardContent>
