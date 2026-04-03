@@ -1,126 +1,122 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Menu, X, Phone, Clock, MapPin } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Menu, X, Phone, MapPin } from 'lucide-react'
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About Doctor" },
-  { href: "/appointments", label: "Appointments" },
-  { href: "/reviews", label: "Reviews" },
+  { href: "#home", label: "Home" },
+  { href: "#about", label: "About" },
+  { href: "#services", label: "Services" },
+  { href: "#reviews", label: "Reviews" },
 ]
 
 export function Navigation() {
-  const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navLinks.map(link => document.getElementById(link.href.substring(1)))
+      const scrollPosition = window.scrollY + 150 // Offset for better accuracy
+
+      for (const section of sections) {
+        if (section && scrollPosition >= section.offsetTop && scrollPosition < section.offsetTop + section.offsetHeight) {
+          setActiveSection(section.id)
+          break
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    setIsOpen(false);
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-      {/* Top bar with contact info */}
-      <div className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-2 text-sm md:justify-between">
-          <div className="hidden items-center gap-6 md:flex">
-            <a href="tel:+919973622731" className="flex items-center gap-2">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
+      {/* Top Info Bar */}
+      <div className="bg-primary py-2 text-primary-foreground">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 text-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
               <Phone className="size-4" />
               <span>+91 9973622731</span>
-            </a>
-            <span className="flex items-center gap-2">
-              <Clock className="size-4" />
-              <span>Mon-Fri: 9AM - 6PM</span>
-            </span>
+            </div>
+            <div className="hidden items-center gap-1.5 sm:flex">
+              <MapPin className="size-4" />
+              <span>Mirjanhat, Naya Bazar, Bhagalpur</span>
+            </div>
           </div>
-          <a
-            href="https://share.google/nKY1rZosZW4khSRoF"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2"
+          <a 
+            href="#appointments"
+            onClick={(e) => handleLinkClick(e, '#appointments')}
+            className="hidden rounded-md bg-background px-3 py-1 text-xs font-semibold text-primary transition-colors hover:bg-background/90 sm:block"
           >
-            <MapPin className="size-4" />
-            <span>
-              View on Google Maps
-            </span>
+            Book Appointment
           </a>
         </div>
       </div>
 
-      {/* Main navigation */}
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex size-10 items-center justify-center rounded-full bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">SH</span>
-          </div>
-          <span className="hidden sm:inline text-xl font-bold text-foreground">
-            Swastik Hospital
-          </span>
-        </Link>
+      {/* Main Navigation */}
+      <nav className="mx-auto max-w-7xl px-4">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="text-2xl font-bold text-primary">
+            Swastik<span className="text-foreground">Hospital</span>
+          </Link>
 
-        {/* Desktop navigation */}
-        <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                pathname === link.href
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Button asChild className="ml-4">
-            <Link href="/appointments">Book Appointment</Link>
-          </Button>
-        </div>
-
-        {/* Mobile menu button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </Button>
-      </nav>
-
-      {/* Mobile navigation */}
-      {mobileMenuOpen && (
-        <div className="border-t border-border md:hidden">
-          <div className="flex flex-col gap-1 p-4">
+          {/* Desktop Navigation */}
+          <div className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "rounded-md px-4 py-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                  pathname === link.href
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
-                )}
-              >
+                onClick={(e) => handleLinkClick(e, link.href)}
+                className={`font-medium transition-colors ${activeSection === link.href.substring(1) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                 {link.label}
-              </Link>
+              </a>
             ))}
-            <Button asChild className="mt-2">
-              <Link
-                href="/appointments"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Book Appointment
-              </Link>
-            </Button>
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center rounded-md p-2 text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              {isOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="border-t pb-4 md:hidden">
+            <div className="mt-4 flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleLinkClick(e, link.href)}
+                  className={`block rounded-md px-3 py-2 text-base font-medium ${activeSection === link.href.substring(1) ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent'}`}>
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="#appointments"
+                onClick={(e) => handleLinkClick(e, '#appointments')}
+                className="mt-2 w-full rounded-md bg-primary py-2.5 text-center text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+                Book Appointment
+              </a>
+            </div>
+          </div>
+        )}
+      </nav>
     </header>
   )
 }
