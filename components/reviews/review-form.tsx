@@ -53,6 +53,7 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
         e.currentTarget.reset()
         onReviewSubmitted?.()
     } catch (error) {
+        console.error("Error submitting review:", error)
         setSubmitStatus("error")
         setErrorMessage("Failed to submit review. Please try again.")
     } finally {
