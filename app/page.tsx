@@ -34,7 +34,9 @@ export default function Home() {
       <div id="home">
         <HeroSection />
       </div>
-      <ServicesSection />
+      <div id="services">
+        <ServicesSection />
+      </div>
       <section id="about" className="bg-background py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-12 text-center">
