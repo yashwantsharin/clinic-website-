@@ -17,6 +17,8 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
+  const [name, setName] = useState("")
+  const [review, setReview] = useState("")
   const [rating, setRating] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
@@ -35,11 +37,10 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
     setSubmitStatus("idle")
     setErrorMessage("")
 
-    const formData = new FormData(e.currentTarget)
     const data = {
-      patient_name: formData.get("name") as string,
+      patient_name: name,
       rating,
-      review_text: formData.get("review") as string,
+      review_text: review,
     }
 
     try {
@@ -49,8 +50,9 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
         })
 
         setSubmitStatus("success")
+        setName("")
+        setReview("")
         setRating(0)
-        e.currentTarget.reset()
         onReviewSubmitted?.()
     } catch (error) {
         console.error("Error submitting review:", error)
@@ -101,6 +103,8 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
                 name="name"
                 placeholder="John Doe"
                 required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Field>
 
@@ -127,6 +131,8 @@ export function ReviewForm({ onReviewSubmitted }: ReviewFormProps) {
                 placeholder="Share your experience with us..."
                 rows={4}
                 required
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
               />
             </Field>
 
