@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Phone, MapPin } from 'lucide-react'
+import { Menu, X, Phone, MapPin, Clock } from 'lucide-react'
 
 const navLinks = [
   { href: "#home", label: "Home" },
@@ -40,25 +40,21 @@ export function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
-      {/* Top Info Bar */}
-      <div className="bg-primary py-2 text-primary-foreground">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 text-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
+      <div className="bg-primary text-primary-foreground">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 py-2 text-sm md:justify-between">
+          <div className="hidden items-center gap-6 md:flex">
+            <a href="tel:+919973622731" className="flex items-center gap-2">
               <Phone className="size-4" />
               <span>+91 9973622731</span>
-            </div>
-            <div className="hidden items-center gap-1.5 sm:flex">
-              <MapPin className="size-4" />
-              <span>Mirjanhat, Naya Bazar, Bhagalpur</span>
-            </div>
+            </a>
+            <span className="flex items-center gap-2">
+              <Clock className="size-4" />
+              <span>Mon-Fri: 9AM - 6PM</span>
+            </span>
           </div>
-          <a 
-            href="#appointments"
-            onClick={(e) => handleLinkClick(e, '#appointments')}
-            className="hidden rounded-md bg-background px-3 py-1 text-xs font-semibold text-primary transition-colors hover:bg-background/90 sm:block"
-          >
-            Book Appointment
+          <a href="https://share.google/nKY1rZosZW4khSRoF" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+            <MapPin className="size-4" />
+            <span>View on Google Maps</span>
           </a>
         </div>
       </div>
