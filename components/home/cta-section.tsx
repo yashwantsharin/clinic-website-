@@ -17,7 +17,7 @@ export function CtaSection() {
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button asChild size="lg" variant="secondary" className="gap-2">
-                <Link href="/appointments">
+                <Link href="#appointments">
                   <Calendar className="size-5" />
                   Book Appointment
                 </Link>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 import { Card } from "@/components/ui/card";
 import { Siren, Bone, Stethoscope, Baby, HeartPulse, Leaf, Scissors, Bed, Smile } from "lucide-react";
 
@@ -64,12 +64,10 @@ export function ServicesSection() {
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <Link key={service.name} href={`/about?specialty=${service.specialty}`} className="h-full">
-              <Card className="flex h-full flex-col items-center justify-center p-6 text-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+              <Card key={service.name} className="flex h-full flex-col items-center justify-center p-6 text-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
                 <service.icon className="mb-4 size-12 text-primary" />
                 <h3 className="text-xl font-semibold text-foreground">{service.name}</h3>
               </Card>
-            </Link>
           ))}
         </div>
       </div>

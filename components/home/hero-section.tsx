@@ -23,7 +23,7 @@ export function HeroSection() {
             </div>
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button asChild size="lg" className="gap-2">
-                <Link href="/appointments">
+                <Link href="#appointments">
                   <Calendar className="size-5" />
                   Book Appointment
                 </Link>
@@ -43,8 +43,7 @@ export function HeroSection() {
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary">10K+</p>
-                <p className="text-sm text-muted-foreground">Happy Patients</p>
-              </div>
+                <p className="text-sm text-muted-foreground">Happy Patients</p>              </div>
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary">4.9</p>
