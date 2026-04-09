@@ -1,9 +1,8 @@
-"use client";
+'use client';
 import React, {
   useEffect, useRef, useState, useMemo, useCallback,
 } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Testimonial {
   quote: string;
@@ -11,71 +10,28 @@ interface Testimonial {
   designation: string;
   src: string;
 }
-interface Colors {
-  name?: string;
-  designation?: string;
-  testimony?: string;
-  arrowBackground?: string;
-  arrowForeground?: string;
-  arrowHoverBackground?: string;
-}
-interface FontSizes {
-  name?: string;
-  designation?: string;
-  quote?: string;
-}
+
 interface CircularTestimonialsProps {
   testimonials: Testimonial[];
   autoplay?: boolean;
-  colors?: Colors;
-  fontSizes?: FontSizes;
 }
 
-function calculateGap(width: number) {
-  const minWidth = 1024;
-  const maxWidth = 1456;
-  const minGap = 60;
-  const maxGap = 86;
-  if (width <= minWidth) return minGap;
-  if (width >= maxWidth)
-    return Math.max(minGap, maxGap + 0.06018 * (width - maxWidth));
-  return minGap + (maxGap - minGap) * ((width - minWidth) / (maxWidth - minWidth));
-}
+const getInitials = (name: string) => {
+  if (!name) return "";
+  const nameParts = name.split(' ');
+  if (nameParts.length > 1) {
+    return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
 
 export const CircularTestimonials = ({
-  testimonials, autoplay = true, colors = {}, fontSizes = {},
+  testimonials, autoplay = true,
 }: CircularTestimonialsProps) => {
-  const colorName = colors.name ?? "#000";
-  const colorDesignation = colors.designation ?? "#6b7280";
-  const colorTestimony = colors.testimony ?? "#4b5563";
-  const colorArrowBg = colors.arrowBackground ?? "#141414";
-  const colorArrowFg = colors.arrowForeground ?? "#f1f1f7";
-  const colorArrowHoverBg = colors.arrowHoverBackground ?? "#00a6fb";
-  const fontSizeName = fontSizes.name ?? "1.5rem";
-  const fontSizeDesignation = fontSizes.designation ?? "0.925rem";
-  const fontSizeQuote = fontSizes.quote ?? "1.125rem";
-
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hoverPrev, setHoverPrev] = useState(false);
-  const [hoverNext, setHoverNext] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(1200);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
   const autoplayIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const testimonialsLength = useMemo(() => testimonials.length, [testimonials]);
-  const activeTestimonial = useMemo(
-    () => testimonials[activeIndex], [activeIndex, testimonials]
-  );
-
-  useEffect(() => {
-    function handleResize() {
-      if (imageContainerRef.current) {
-        setContainerWidth(imageContainerRef.current.offsetWidth);
-      }
-    }
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     if (autoplay) {
@@ -98,105 +54,229 @@ export const CircularTestimonials = ({
     if (autoplayIntervalRef.current) clearInterval(autoplayIntervalRef.current);
   }, [testimonialsLength]);
 
-  function getImageStyle(index: number): React.CSSProperties {
-    const gap = calculateGap(containerWidth);
-    const maxStickUp = gap * 0.8;
-    const isActive = index === activeIndex;
-    const isLeft = (activeIndex - 1 + testimonialsLength) % testimonialsLength === index;
-    const isRight = (activeIndex + 1) % testimonialsLength === index;
-    if (isActive) return {
-      zIndex: 3, opacity: 1, pointerEvents: "auto",
-      transform: `translateX(0px) translateY(0px) scale(1) rotateY(0deg)`,
-      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
-    };
-    if (isLeft) return {
-      zIndex: 2, opacity: 1, pointerEvents: "auto",
-      transform: `translateX(-${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(15deg)`,
-      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
-    };
-    if (isRight) return {
-      zIndex: 2, opacity: 1, pointerEvents: "auto",
-      transform: `translateX(${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(-15deg)`,
-      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
-    };
-    return {
-      zIndex: 1, opacity: 0, pointerEvents: "none",
-      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
-    };
-  }
-
-  const quoteVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 },
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStart(e.touches[0].clientX);
   };
 
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const swipeX = touchEnd - touchStart;
+
+    if (swipeX < -50) {
+      handleNext();
+    } else if (swipeX > 50) {
+      handlePrev();
+    }
+    setTouchStart(null);
+  };
+
+  const getCardStyle = (index: number): React.CSSProperties => {
+    let transform = 'scale(0.8)';
+    let opacity = 0;
+    let zIndex = -1;
+    let position: 'absolute' | 'relative' = 'absolute';
+
+    if (index === activeIndex) {
+        transform = 'translateX(0) rotate(0deg) scale(1)';
+        opacity = 1;
+        zIndex = 10;
+        position = 'relative';
+    } else if (index === (activeIndex - 1 + testimonialsLength) % testimonialsLength) {
+        transform = 'translateX(-65%) rotate(-8deg) scale(0.75)';
+        opacity = 0.4;
+        zIndex = 0;
+    } else if (index === (activeIndex + 1) % testimonialsLength) {
+        transform = 'translateX(65%) rotate(8deg) scale(0.75)';
+        opacity = 0.4;
+        zIndex = 0;
+    }
+
+    return {
+        transform,
+        opacity,
+        zIndex,
+        position,
+    };
+  };
+
+  const activeDoctor = testimonials[activeIndex];
+
   return (
-    <div className="testimonial-container">
-      <div className="testimonial-grid">
-        <div className="image-container" ref={imageContainerRef}>
+    <div className="flex items-center gap-8 testimonial-container-rewrite">
+      <div className="w-full max-w-md">
+        <div
+          className="card-stack"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {testimonials.map((testimonial, index) => (
-            <img key={testimonial.src} src={testimonial.src}
-              alt={testimonial.name} className="testimonial-image"
-              style={getImageStyle(index)} />
+            <div
+              key={testimonial.name + index}
+              className={`card-wrapper ${index === activeIndex ? 'center' : ''}`}
+              style={getCardStyle(index)}
+            >
+              {testimonial.src ? (
+                <img
+                  src={testimonial.src}
+                  alt={testimonial.name}
+                  className="doctor-image"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = "image-placeholder";
+                    placeholder.innerHTML = `<span>${getInitials(testimonial.name)}</span>`;
+                    target.parentElement?.appendChild(placeholder);
+                  }}
+                />
+              ) : (
+                <div className="image-placeholder">
+                  <span>{getInitials(testimonial.name)}</span>
+                </div>
+              )}
+            </div>
           ))}
         </div>
-        <div className="testimonial-content">
-          <AnimatePresence mode="wait">
-            <motion.div key={activeIndex} variants={quoteVariants}
-              initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.3, ease: "easeInOut" }}>
-              <h3 className="name" style={{ color: colorName, fontSize: fontSizeName }}>
-                {activeTestimonial.name}
-              </h3>
-              <p className="designation" style={{ color: colorDesignation, fontSize: fontSizeDesignation }}>
-                {activeTestimonial.designation}
-              </p>
-              <motion.p className="quote" style={{ color: colorTestimony, fontSize: fontSizeQuote }}>
-                {activeTestimonial.quote.split(" ").map((word, i) => (
-                  <motion.span key={i}
-                    initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
-                    animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
-                    transition={{ duration: 0.22, ease: "easeInOut", delay: 0.025 * i }}
-                    style={{ display: "inline-block" }}>
-                    {word}&nbsp;
-                  </motion.span>
-                ))}
-              </motion.p>
-            </motion.div>
-          </AnimatePresence>
-          <div className="arrow-buttons">
-            <button className="arrow-button"
-              onClick={handlePrev}
-              style={{ backgroundColor: hoverPrev ? colorArrowHoverBg : colorArrowBg }}
-              onMouseEnter={() => setHoverPrev(true)}
-              onMouseLeave={() => setHoverPrev(false)}>
-              <FaArrowLeft size={28} color={colorArrowFg} />
-            </button>
-            <button className="arrow-button"
-              onClick={handleNext}
-              style={{ backgroundColor: hoverNext ? colorArrowHoverBg : colorArrowBg }}
-              onMouseEnter={() => setHoverNext(true)}
-              onMouseLeave={() => setHoverNext(false)}>
-              <FaArrowRight size={28} color={colorArrowFg} />
-            </button>
+        <div className="navigation-controls">
+          <button className="arrow-button" onClick={handlePrev} aria-label="Previous testimonial">
+            <FaArrowLeft size={20} />
+          </button>
+          <div className="text-indicator">
+            {activeIndex + 1} / {testimonialsLength}
           </div>
+          <button className="arrow-button" onClick={handleNext} aria-label="Next testimonial">
+            <FaArrowRight size={20} />
+          </button>
         </div>
       </div>
+
+      <div className="doctor-info">
+        <h2 className="doctor-name">{activeDoctor.name}</h2>
+        <p className="doctor-designation">{activeDoctor.designation}</p>
+        <p className="doctor-quote">{activeDoctor.quote}</p>
+      </div>
+
       <style jsx>{`
-        .testimonial-container { width: 100%; max-width: 56rem; padding: 2rem; }
-        .testimonial-grid { display: grid; gap: 5rem; }
-        .image-container { position: relative; width: 100%; height: 24rem; perspective: 1000px; }
-        .testimonial-image { position: absolute; width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .testimonial-content { display: flex; flex-direction: column; justify-content: space-between; }
-        .name { font-weight: bold; margin-bottom: 0.25rem; }
-        .designation { margin-bottom: 2rem; }
-        .quote { line-height: 1.75; }
-        .arrow-buttons { display: flex; gap: 1.5rem; padding-top: 3rem; }
-        .arrow-button { width: 2.7rem; height: 2.7rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.3s; border: none; }
-        @media (min-width: 768px) {
-          .testimonial-grid { grid-template-columns: 1fr 1fr; }
-          .arrow-buttons { padding-top: 0; }
+        .testimonial-container-rewrite {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem 0;
+          gap: 2rem;
+        }
+
+        .card-stack {
+            position: relative;
+            width: 320px;
+            height: 380px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .card-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: white;
+            border-radius: 1.5rem; /* rounded-3xl */
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+        }
+
+        .card-wrapper.center {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+        }
+
+        .doctor-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0f2fe; /* bg-blue-100 */
+        }
+
+        .image-placeholder span {
+            color: #2563eb; /* text-blue-600 */
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .doctor-info {
+          max-width: 400px;
+        }
+        .doctor-name {
+          font-size: 1.5rem; /* text-2xl */
+          font-weight: bold;
+          color: #111827;
+        }
+        .doctor-designation {
+          font-size: 1rem; /* text-base */
+          color: #6b7280;
+          margin-bottom: 1rem;
+        }
+        .doctor-quote {
+          font-size: 1rem; /* text-base */
+          color: #4b5563;
+          line-height: 1.6;
+        }
+
+        .navigation-controls {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+        .arrow-button {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 50%;
+          background: white;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border: 1px solid #e5e7eb;
+          color: #4b5563;
+          transition: all 0.2s;
+        }
+        .arrow-button:hover {
+          background: #f3f4f6;
+          transform: translateY(-2px);
+        }
+        .text-indicator {
+          color: #6b7280;
+          font-size: 1rem;
+          font-weight: 500;
+          min-width: 50px;
+          text-align: center;
+        }
+
+        @media (max-width: 900px) {
+          .testimonial-container-rewrite {
+            flex-direction: column;
+          }
+          .doctor-info {
+            text-align: center;
+            margin-top: 2rem;
+          }
         }
       `}</style>
     </div>
